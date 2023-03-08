@@ -15,7 +15,7 @@ datasetFold = cwd+"/datasets/"
 
 def image_is_unknown(facial_img_path, facename):
     for faceFold in os.listdir(datasetFold):
-        if faceFold == 'unknown':
+        if faceFold == 'unknown' or faceFold == 'input' or faceFold == 'output':
             continue
         for imagePath in glob.glob(datasetFold+faceFold+"/*.jpg"):    
             obj = DeepFace.verify(facial_img_path, imagePath, model_name = 'ArcFace', detector_backend = 'retinaface',enforce_detection = False)
@@ -25,7 +25,7 @@ def image_is_unknown(facial_img_path, facename):
                 facename = faceFold
                 cv2.imwrite(datasetFold+faceFold+"/"+facename+'_'+str(count+1)+".jpg",img)
                 return False,facename
-            print(obj['distance'])
+            #print(obj['distance'])
     return True,facename
 
 # read from input folder the frames stored
