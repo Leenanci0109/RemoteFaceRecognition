@@ -4,6 +4,7 @@ import os
 import cv2
 import glob
 import shutil
+import time
 # it is a simple inference from one image that shows each face detected 
 # and tries to find the similar images from the dataset directory 
 # the dataset directory contains one folder for each face recognized and validated plus one unknown folder
@@ -30,12 +31,19 @@ def image_is_unknown(facial_img_path, facename):
 
 # read from input folder the frames stored
 input_path = cwd+"/datasets/input/"
+avgTime = 0
+count = 0
 while len(os.listdir(input_path)) > 0:
     
     frame_name = os.listdir(input_path)[0]
     shutil.move(input_path + os.listdir(input_path)[0], cwd +'/datasets/tmp/'+ frame_name)
     frame = cv2.imread(cwd +'/datasets/tmp/'+frame_name)
+    times = time.time()
     faces = RetinaFace.detect_faces(frame)
+    timee = time.time()
+    print("the time to detect faces :", timee - times)
+    count+=1
+    avgTime += timee - times
     img = frame 
     for face in faces: 
         if len(face) == 0:
@@ -43,8 +51,6 @@ while len(os.listdir(input_path)) > 0:
         identity = faces[face]
         facial_area = identity["facial_area"]
         landmarks = identity["landmarks"] 
-
-        
         facial_img = img[facial_area[1]: facial_area[3], facial_area[0]: facial_area[2]]
         cv2.imwrite(tmpImage,facial_img)
         facename = 'unknown'
@@ -65,3 +71,4 @@ while len(os.listdir(input_path)) > 0:
     #     cv2.imshow('image preview', img)
     #     cv2.waitKey(0)
     # cv2.destroyAllWindows()
+    print("the avg time to detect faces :", avgTime/count)
